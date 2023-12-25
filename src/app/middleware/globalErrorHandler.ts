@@ -28,6 +28,9 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
 
     }
+    /* else if(err instanceof mongoose.Error.ValidationError){
+
+    }*/ 
     else if (err instanceof mongoose.Error.CastError) {
         const simplifiedError = handleCastError(err)
         statusCode = simplifiedError.statusCode;
