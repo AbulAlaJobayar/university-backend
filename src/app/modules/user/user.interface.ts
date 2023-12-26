@@ -6,4 +6,5 @@ export type TUser ={
     password: string;
     passwordChangedAt?:Date;
     role: User_role;
+    passwordHistory?:{password:string; timeStamp:Date}[];
 }

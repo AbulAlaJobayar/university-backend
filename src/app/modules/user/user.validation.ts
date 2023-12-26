@@ -17,11 +17,11 @@ const loginValidationSchema=z.object({
         invalid_type_error: 'User name must be String',
         required_error: 'User name must be required'
     }),
-    password:z.string()
+    password: z.string().min(8, 'password should have at least 8 character').max(20, 'password should be no longer then 20 character').refine((value) =>/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()+=-\?;,./{}|\":<>\[\]\\\' ~_]).{8,}/.test(value), 'password must be one digit,one uppercase,one lowercase,one special character'),
 })
 const userChangedPassword=z.object({
     currentPassword:z.string(),
-    newPassword:z.string()
+    newPassword:z.string().min(8, 'password should have at least 8 character').max(20, 'password should be no longer then 20 character').refine((value) =>/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()+=-\?;,./{}|\":<>\[\]\\\' ~_]).{8,}/.test(value), 'password must be one digit,one uppercase,one lowercase,one special character'),
 })
 
 export const userValidation = {

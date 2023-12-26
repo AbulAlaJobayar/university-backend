@@ -28,7 +28,8 @@ const userSchema = new Schema<TUser>({
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
-    }
+    },
+    passwordHistory:[{password:String, timeStamp:Date}],
 },{timestamps:true})
 // hashing password
 
