@@ -3,6 +3,7 @@ declare namespace NodeJS{
         NODE_ENV:string
         PORT:number
         DATABASE_URL:string
-       BCRYPT_SLAT_ROUND:number
+       BCRYPT_SLAT_ROUND:number,
+       ACCESS_TOKEN_SECRET:string
     }
 }

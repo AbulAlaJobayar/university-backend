@@ -19,8 +19,13 @@ const loginValidationSchema=z.object({
     }),
     password:z.string()
 })
+const userChangedPassword=z.object({
+    currentPassword:z.string(),
+    newPassword:z.string()
+})
 
 export const userValidation = {
     createUserValidationSchema,
-    loginValidationSchema
+    loginValidationSchema,
+    userChangedPassword
 }

@@ -20,6 +20,10 @@ const userSchema = new Schema<TUser>({
         required: [true, 'please provide uniq password'],
         select:0
     },
+    passwordChangedAt:{
+        type:Date,
+        default:null
+    },
     role: {
         type: String,
         enum: ['user', 'admin'],
