@@ -31,6 +31,9 @@ const userChangedPassword = catchAsync(async (req: Request, res: Response) => {
         data: result
     })
 })
+
+
+
 export const userController = {
     createUserIntoDB,
     loginUser,

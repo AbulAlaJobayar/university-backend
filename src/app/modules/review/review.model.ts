@@ -1,25 +1,41 @@
 import { Schema, model } from "mongoose";
-import { TReview } from "./review.interface";
+import { TCreatedBy, TReview } from "./review.interface";
 
-
-
- const reviewSchema = new Schema<TReview>({
-    courseId: {
-      type:Schema.Types.ObjectId,
-      ref: 'Course'
-
+const createdBySchema = new Schema<TCreatedBy>({
+    _id: {
+        type: Schema.Types.ObjectId
     },
-    rating:{
-        type:Number,
-        required: [true, 'please input Rating'],
-        min:1,
-        max:5
+    username: {
+        type: String
     },
-    review:{
-        type:String,
-        required: [true, 'please input review'],
+    email: {
+        type: String
+    },
+    role: {
+        type: String
     }
-    
+})
+
+const reviewSchema = new Schema<TReview>({
+    courseId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Course'
+
+    },
+    rating: {
+        type: Number,
+        required: [true, 'please input Rating'],
+        min: 1,
+        max: 5
+    },
+    review: {
+        type: String,
+        required: [true, 'please input review'],
+    },
+    createdBy: {
+        type: createdBySchema
+    }
+
 })
 
 export const Review = model<TReview>('Review', reviewSchema)

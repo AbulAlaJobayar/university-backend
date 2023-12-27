@@ -21,6 +21,6 @@ export type TCourse ={
     language:string;
     provider:string;
     details:TDetails
-    createdBy?:Types.ObjectId
+    createdBy?:Types.ObjectId;
 }
 export default TCourse

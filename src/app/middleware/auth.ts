@@ -11,7 +11,6 @@ const auth = (...roles: Array<User_role>) => {
     return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
         const token = req.headers.authorization;
         // check if token is missing
-        console.log(token)
         if (!token) {
             throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized')
         }
@@ -36,10 +35,19 @@ const auth = (...roles: Array<User_role>) => {
         if (iat && convertPasswordChangedTime > iat) {
             throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized')
         }
+        if (roles && !roles.includes(role)) {
+            throw new AppError(
+              httpStatus.UNAUTHORIZED,
+              'You are not authorized !',
+            );
+          }
 
-        if (!(user.role === role) && roles.includes(user?.role)) {
-            throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized')
-        }
+        // if (!(user.role === role) && roles.includes(user?.role)) {
+        //     throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized')
+        // }
+        // if (!roles.includes(user?.role)) {
+        //     throw new Error('You are not authorized to create user')
+        //   }
         req.user = decoded as JwtPayload & { role: string };
         next()
 

@@ -7,7 +7,13 @@ import { TCategory } from "./category.interface";
         required: [true, 'please input name'],
         unique: true,
     },
+    createdBy:{
+        type:Schema.Types.ObjectId,
+        ref:'User'
+    }
     
+},{
+    timestamps:true
 })
 
 export const Category = model<TCategory>('Category', categorySchema)

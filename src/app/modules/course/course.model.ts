@@ -65,8 +65,8 @@ const courseSchema = new Schema<TCourse>({
         required: true
     },
     createdBy:{
-        type:Schema.Types.ObjectId,
-        ref:'User'
+        type: Schema.Types.ObjectId,
+      ref: 'User',
     }
 },{
     toJSON: {
