@@ -1,6 +1,5 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { any } from 'zod';
 import bcrypt from 'bcrypt';
 
 /* eslint-disable no-unused-vars */
@@ -13,11 +12,13 @@ import { TUser } from "./user.interface";
 import { User } from "./user.model";
 import { comparePassword } from "./user.utils";
 import config from "../../config";
+import { sendResponse } from '../../utils/sendResponse';
+import { Response } from 'express';
 
 const createUserIntoDB = async (payload: TUser) => {
     const result = await User.create(payload)
-    //send response without password
-    const { password, passwordHistory, ...otherField } = result.toObject()
+    //send response without password, passwordHistory,passwordChangedAt,
+    const { password, passwordHistory,passwordChangedAt, ...otherField } = result.toObject()
     return otherField
 }
 const loginUser = async (payload: { username: string, password: string }) => {
@@ -38,9 +39,9 @@ const loginUser = async (payload: { username: string, password: string }) => {
         role: user.role,
         email: user.email
     }
-    const accessToken = jwt.sign(jwtPayload, config.access_token_secret, { expiresIn: '1h' });
+    const accessToken = jwt.sign(jwtPayload, config.access_token_secret, { expiresIn:config.access_token_expire_in });
     //filtered out  password from user
-    const { password, passwordHistory, ...otherField } = user.toObject()
+    const { password, passwordHistory,passwordChangedAt,createdAt,updatedAt, ...otherField } = user.toObject() as any
     return {
         user: otherField,
         token: accessToken
@@ -49,7 +50,7 @@ const loginUser = async (payload: { username: string, password: string }) => {
 }
 
 
-const userChangedPassword = async (userData: JwtPayload, payload: { currentPassword: string, newPassword: string }) => {
+const userChangedPassword = async (res:Response,userData: JwtPayload, payload: { currentPassword: string, newPassword: string }) => {
     const { id, email, iat } = userData
     const user = await User.findOne({ _id: id }).select('+password')
     if (!user) {
@@ -66,6 +67,12 @@ const userChangedPassword = async (userData: JwtPayload, payload: { currentPassw
     //check new  password in  history
     const isPasswordHistory = user?.passwordHistory?.some((pass) => bcrypt.compareSync(payload.newPassword, pass.password));
     if (isPasswordHistory) {
+        sendResponse(res, {
+            statusCode: httpStatus.NOT_FOUND,
+            success: false,
+            message: `Password change failed. Ensure the new password is unique and not among the last 2 used (last used on ${user?.passwordHistory? user.passwordHistory[0].timeStamp:''} ).`,
+            data: null
+        })
         throw new AppError(httpStatus.NOT_FOUND, 'Your password matches a previous password. Please input a unique password!')
     }
 
@@ -74,15 +81,15 @@ const userChangedPassword = async (userData: JwtPayload, payload: { currentPassw
     //check and updatePassword
     const updatedPasswordHistory = [
         { password: hashPassword, timeStamp: new Date() },
-        ...(user?.passwordHistory?.slice(0, 1) || []),
+        ...(user?.passwordHistory?.slice(0, 2) || []),
     ]
     const updatePassword = await User.findByIdAndUpdate(user._id, {
         password: hashPassword,
         passwordChangedAt: new Date(),
         passwordHistory: updatedPasswordHistory
     }, { new: true })
-    const { password, passwordHistory, ...otherField } = updatePassword?.toObject() as any
-    return otherField
+   const {password,passwordHistory,...otherProperty}=updatePassword?.toObject as any
+    return otherProperty
 
 
 
