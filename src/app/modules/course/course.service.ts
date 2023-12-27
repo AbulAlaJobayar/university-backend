@@ -47,26 +47,45 @@ const getAllCourseFromDB = async (query: TQueryObj): Promise<TCourse[] | any> =>
     }
    
 }
-const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
+const updateCourseIntoDB = async (userData:JwtPayload,id: string, payload: Partial<TCourse>) => {
+    const { id:tokenID, email, iat,role } = userData
+    const user = await User.findOne({ _id: tokenID })
+    
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, 'user not found')
+    }
+    
+    if (!iat) {
+        throw new AppError(httpStatus.FORBIDDEN, "invalid token")
+    }
+   
+    if (!user.email===email) {
+        throw new AppError(httpStatus.NOT_FOUND, "user does not match")
+    }
+    if (!user.role===role) {
+        throw new AppError(httpStatus.NOT_FOUND, "user does not match")
+    }
     const { tags, details, ...remainingCourse } = payload
     const updatedModifiedData: Record<string, unknown> = {
         ...remainingCourse
 
     }
+  
     if (tags?.length) {
-        tags.forEach((tag) => {
-            for (const [key, value] of Object.entries(tag)) {
-                updatedModifiedData[`tag.${key}`] = value
-            }
-        })
+        tags.forEach((tag, index) => {
+            updatedModifiedData[`tags.${index}.name`] = tag.name;
+            updatedModifiedData[`tags.${index}.isDeleted`] = tag.isDeleted;
+        });
     }
+    
     if (details && Object.keys(details).length) {
         for (const [key, value] of Object.entries(details)) {
             updatedModifiedData[`details.${key}`] = value
         }
     }
 
-    const result = await Course.findByIdAndUpdate(id, updatedModifiedData, { new: true, runValidators: true })
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+    const result = await Course.findByIdAndUpdate(id, updatedModifiedData, { new: true, runValidators: true }).populate({path:'createdBy',select:'_id username email role'})
     return result
 }
 const getCourseByReviewFromDB = async (id: string) => {

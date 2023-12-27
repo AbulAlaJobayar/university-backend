@@ -26,10 +26,11 @@ const getAllCourseFromDB = catchAsync(async (req, res) => {
   })
 })
 const updateCourseIntoDB = catchAsync(async (req, res) => {
+  
   const {courseId}=req.params
   const body=req.body
   
-  const result = await courseService.updateCourseIntoDB(courseId,body);
+  const result = await courseService.updateCourseIntoDB(req.user,courseId,body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
