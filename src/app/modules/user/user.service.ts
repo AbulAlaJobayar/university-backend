@@ -67,7 +67,6 @@ const userChangedPassword = async (res:Response,userData: JwtPayload, payload: {
     //check new password is exist on db
     const isNewPasswordIsExistOnDB=await comparePassword(payload.newPassword, user.password)
     if(isNewPasswordIsExistOnDB){
-        console.log('new password mile gase by by')
         sendResponse(res, {
             statusCode: httpStatus.NOT_FOUND,
             success: false,
@@ -78,15 +77,13 @@ const userChangedPassword = async (res:Response,userData: JwtPayload, payload: {
     //check new  password in  history
     const isPasswordHistory = user?.passwordHistory?.some((pass) => bcrypt.compareSync(payload.newPassword, pass.password));
     
-    
     if (isPasswordHistory) {
         sendResponse(res, {
             statusCode: httpStatus.NOT_FOUND,
             success: false,
             message: `Password change failed. Ensure the new password is unique and not among the last 2 used (last used on ${user?.passwordHistory? user.passwordHistory[0].timeStamp:''} ).`,
             data: null
-        })
-     
+        }) 
     }
 
     // hash password
@@ -101,9 +98,10 @@ const userChangedPassword = async (res:Response,userData: JwtPayload, payload: {
         passwordChangedAt: new Date(),
         passwordHistory: updatedPasswordHistory
     }, { new: true })
-    console.log(updatePassword)
-   const {password,passwordHistory,...otherProperty}=updatePassword?.toObject as any
-    return otherProperty
+    
+   const { _id, username, email:userEmail, role, createdAt, updatedAt }=updatePassword as any
+  
+    return {_id, username, email:userEmail, role, createdAt, updatedAt }
 
 
 
