@@ -12,7 +12,7 @@ const auth = (...roles: Array<User_role>) => {
         const token = req.headers.authorization;
         // check if token is missing
         if (!token) {
-            throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized')
+            throw new AppError(httpStatus.UNAUTHORIZED, 'invalid jwt')
         }
         //verify toke is valid
         const decoded = jwt.verify(token, config.access_token_secret)
@@ -21,11 +21,11 @@ const auth = (...roles: Array<User_role>) => {
         //check user is valid
         const user = await User.findOne({ _id: id })
         if (!user) {
-            throw new AppError(httpStatus.NOT_FOUND, 'user not found')
+            throw new AppError(httpStatus.NOT_FOUND, 'not authorized user')
         }
         //check email is valid
         if (!user.email === email) {
-            throw new AppError(httpStatus.NOT_FOUND, ' email does not match')
+            throw new AppError(httpStatus.NOT_FOUND, 'not authorized user')
         }
         //check password change time is less then jwt issue time 
         // convert time to number
@@ -33,21 +33,14 @@ const auth = (...roles: Array<User_role>) => {
         const convertPasswordChangedTime = new Date(passwordChangTime).getTime() / 1000;
 
         if (iat && convertPasswordChangedTime > iat) {
-            throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized')
+            throw new AppError(httpStatus.UNAUTHORIZED, 'not authorized user')
         }
         if (roles && !roles.includes(role)) {
             throw new AppError(
               httpStatus.UNAUTHORIZED,
-              'You are not authorized !',
+              'not authorized user!',
             );
           }
-
-        // if (!(user.role === role) && roles.includes(user?.role)) {
-        //     throw new AppError(httpStatus.UNAUTHORIZED, 'you are not authorized')
-        // }
-        // if (!roles.includes(user?.role)) {
-        //     throw new Error('You are not authorized to create user')
-        //   }
         req.user = decoded as JwtPayload & { role: string };
         next()
 

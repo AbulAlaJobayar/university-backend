@@ -1,3 +1,4 @@
+
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ErrorRequestHandler } from "express";
@@ -55,8 +56,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
         message = simplifiedError.message;
         errorMessage = simplifiedError.errorMessage;
         errorDetails = simplifiedError.errorDetails;
-    }
-    else if(err.message && err.message === "invalid signature"){
+    } else if(err.message && err.message === "invalid signature" || err.message === "jwt expired" || err.message === "invalid jwt" ||err.message === "undefined jwt" ||err.message === "not authorized user" ||err.message === "access denied"){
         
         statusCode = 500;
         success =false ;
@@ -65,7 +65,6 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
         errorDetails = null;
         
     }
-
     res.status(statusCode).json({
         success: success,
         message: message,
