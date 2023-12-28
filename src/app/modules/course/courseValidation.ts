@@ -43,6 +43,7 @@ const createCourseValidationSchema = z.object({
         invalid_type_error: 'provider must be String',
         required_error: 'provider must be required'
     }),
+    durationInWeeks:z.number(),
     details: createDetailsValidationSchema
 
 })

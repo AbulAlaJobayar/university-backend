@@ -15,7 +15,7 @@ const tagsSchema = new Schema<TTags>({
 const detailsSchema = new Schema<TDetails>({
     level: {
         type: String,
-        enum:['Beginner', 'Intermediate','Advanced']
+        enum: ['Beginner', 'Intermediate', 'Advanced']
     },
     description: {
         type: String,
@@ -60,28 +60,29 @@ const courseSchema = new Schema<TCourse>({
         type: String,
         required: true
     },
+    durationInWeeks: {
+        type: Number
+    },
     details: {
         type: detailsSchema,
         required: true
     },
-    createdBy:{
+    
+    createdBy: {
         type: Schema.Types.ObjectId,
-      ref: 'User',
+        ref: 'User',
     }
-},{
-    timestamps:true,
-    toJSON: {
-        virtuals: true,
-        
-      },
-   versionKey:false, 
-     
+}, {
+    timestamps: true,
+    versionKey: false,
+
 })
-courseSchema.virtual('durationInWeeks').get(function() {
-const startDate=new Date(this.startDate) ;
-const endDate=new Date(this.endDate) ;
-const estimateDate = endDate.getTime() - startDate.getTime();
-const weeks=Math.ceil(estimateDate / (7 * 24 * 60 * 60 * 1000))
-return weeks
-  });
+
+// courseSchema.virtual('durationInWeeks').get(function () {
+//     const startDate = new Date(this.startDate);
+//     const endDate = new Date(this.endDate);
+//     const estimateDate = endDate.getTime() - startDate.getTime();
+//     const weeks = Math.ceil(estimateDate / (7 * 24 * 60 * 60 * 1000))
+//     return weeks
+// });
 export const Course = model<TCourse>('Course', courseSchema)
