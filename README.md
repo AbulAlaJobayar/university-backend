@@ -1,5 +1,5 @@
 
-## To set up and run the course services project locally, follow these steps:
+## To set up and run the university services project locally, follow these steps:
   ### 1. Clone the GitHub repository:
   Use the `git clone` command to clone the project repository from GitHub to your local machine
 
@@ -18,12 +18,11 @@ Open the `.env` file in a text editor and set the following variables
 ```http
 NODE_ENV=development
 PORT=5000
-DATABASE_URL=your_mongodb_connection_string
+DATABASE_URL=mongodb+srv://<name>:<password>@cluster0.ph1akes.mongodb.net/mastery?retryWrites=true&w=majority
+BCRYPT_SALT_ROUND=12
 
 ```
 `DATABASE_URL=example(mongodb+srv://name:password@cluster0.ph1akes.mongodb.net/courses?retryWrites=true&w=majority)`
-### 6. create a dist folder  in root file:
-
 ## Development Workflow
 
 Run the project in development mode:
@@ -44,120 +43,168 @@ Build Project:
 
 ## API Reference
 
-#### Domain: https://coursereview-pi.vercel.app/
+#### Domain: https://courseuniversity.vercel.app/
 
-#### Create a Course
+#### User Registration
 
 ```http
-  POST /api/course
+  POST /api/auth/register
+```
+```http
+{
+    "username": "john_doe",
+    "email": "john@example.com",
+    "password": "123456",
+    "role": "user"
+}
+```
+
+
+
+####  User Login
+
+```http
+  POST /api/auth/login
+```
+```http
+{
+    "username": "john_doe",
+    "password": "123456"
+}
+```
+
+#### Change Password
+
+```http
+  POST /api/auth/change-password
+
+```
+```http
+ Authorization: <JWT_TOKEN>
 ```
 ```http
   {
-    "title": "Sample Course",
-    "instructor": "Jane Doe",
-    "categoryId": "123456789012345678901234",
+    "currentPassword": "123456",
+    "newPassword": "new123456"
+}
+```
+
+
+#### Create a Course (Only Admin can do this)
+
+```http
+  POST /api/courses
+
+```
+```http
+ Authorization: <ADMIN_JWT_TOKEN>
+```
+```http
+ {
+    "title": "Introduction to Web Development",
+    "instructor": "John Smith",
+    "categoryId": "12345abcde67890fghij",
     "price": 49.99,
     "tags": [
-        {
-            "name": "Programming",
-            "isDeleted": false
-        },
-        {
-            "name": "Web Development",
-            "isDeleted": false
-        }
+        {"name": "Programming", "isDeleted": false},
+        {"name": "Web Development", "isDeleted": false}
     ],
-    "startDate": "2023-01-15",
-    "endDate":"2023-03-14",
+    "startDate": "2023-02-01",
+    "endDate": "2023-04-01",
     "language": "English",
     "provider": "Tech Academy",
+    "durationInWeeks": 8,
     "details": {
-        "level": "Intermediate",
-        "description": "Detailed description of the course"
+        "level": "Beginner",
+        "description": "A comprehensive introduction to web development."
     }
 }
+
+#### Get Paginated and Filtered Courses
+
+```http
+ GET /api/courses
 ```
 
 
-
-#### Get a Course
-
-```http
-  GET /api/courses
-```
-#### Create a Category
+#### Create a Category (Only Admin can do this)**
 
 ```http
-  POST /api/categories
+POST /api/categories
 ```
 ```http
-  {
-    "name": "Programming"
+ Authorization: <ADMIN_JWT_TOKEN>
+```
+```http
+{
+    "name": "Web Development"
 }
 ```
-
 
 #### Get All Categories
 
 ```http
-  GET /api/categories
+ GET /api/categories
 ```
-#### Create a Review
+```http
+  _id:657f3dd66ad2876c200f34b6
+```
+####  Create a Review (Only the user can do this)
 
 ```http
-  POST /api/reviews
+POST /api/reviews
+```
+```http
+ Authorization: <USER_JWT_TOKEN>
 ```
 ```http
 {
-    "courseId": "123456789012345678901234",
+    "courseId": "67890fghij54321abcde",
     "rating": 4,
-    "review": "Great course!"
+    "review": "Great course, very informative and well-structured."
 }
 ```
-
-#### Update a Course (Partial Update with Dynamic Update)
+####  Update a Course (Only Admin can do this)
 
 ```http
- PUT/api/courses/:courseId
+PUT /api/courses/:courseId
 ```
 ```http
- {
-    "title": "Updated Title",
-    "instructor": "New Instructor",
-    "categoryId": "123456789012345678901234",
+Authorization: <ADMIN_JWT_TOKEN>
+```
+```http
+{
     "price": 59.99,
     "tags": [
-        {
-            "name": "Programming",
-            "isDeleted": true
-        },
-        {
-            "name": "Web Development",
-            "isDeleted": false
-        }
+        {"name": "Programming", "isDeleted": false},
+        {"name": "Web Development", "isDeleted": false},
+        {"name": "JavaScript", "isDeleted": false}
     ],
-    "startDate": "2023-02-01",
-    "endDate":"2023-03-14",
-    "language": "Spanish",
-    "provider": "Code Masters",
-    "durationInWeeks": 6,
     "details": {
         "level": "Intermediate",
-        "description": "Detailed description of the course"
+        "description": "A comprehensive course on web development with a focus on JavaScript."
     }
 }
 ```
-
-#### Get Course by ID with Reviews
-
-```http
- GET/api/courses/:courseId/reviews
-```
-#### Get the Best Course Based on Average Review (Rating)
+####  Get Course by ID with Reviews**
 
 ```http
- GET/api/course/best
+GET /api/courses/:courseId/reviews
+```
+
+####  Get the Best Course Based on Average Review (Rating)*
+
+```http
+GET /api/course/best
 ```
 
 
 
+
+
+
+## if need any information
+contact me
+
+- abulalajobayar@gmail.com
+- jobayar.dev@gmail.com
