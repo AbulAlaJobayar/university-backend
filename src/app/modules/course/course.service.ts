@@ -93,7 +93,7 @@ const getCourseByReviewFromDB = async (id: string) => {
     try {
         session.startTransaction()
 
-        const course = await Course.findById(id).session(session)
+        const course = await Course.findById(id).populate({path:'createdBy',select:'_id username email role'}).session(session)
         if (!course) {
             await session.abortTransaction()
             session.endSession()
@@ -127,11 +127,11 @@ const getBestCourseByReviewFromDB = async () => {
         }, { $limit: 1 }
     ])
     const bestCourseID = aggregationR[0]._id
-    const bestCourse = await Course.findById(bestCourseID);
+    const bestCourse = await Course.findById(bestCourseID).populate({path:'createdBy',select:'_id username email role'});
 
     return {
         course: bestCourse,
-        averageRating: aggregationR[0].averageRating,
+        averageRating:aggregationR[0].averageRating.toFixed(2),
         reviewCount: aggregationR[0].reviewCount,
     }
 }

@@ -69,6 +69,7 @@ const courseSchema = new Schema<TCourse>({
       ref: 'User',
     }
 },{
+    timestamps:true,
     toJSON: {
         virtuals: true,
         

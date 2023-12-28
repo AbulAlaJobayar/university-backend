@@ -7,6 +7,8 @@ import mongoose from "mongoose";
 import handleCastError from "../errors/handleCastError";
 import { ZodError } from "zod";
 import handleZodError from "../errors/handleZodError";
+import handleValidationError from "../errors/handleValidationError";
+import handlerDuplicateError from "../errors/handlaDuplacateError";
 
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -38,6 +40,30 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
         message = simplifiedError.message;
         errorMessage = simplifiedError.errorMessage;
         errorDetails = simplifiedError.errorDetails;
+    }else if(err instanceof mongoose.Error.ValidationError){
+        const simplifiedError = handleValidationError(err)
+        statusCode = simplifiedError.statusCode;
+        success = simplifiedError.success;
+        message = simplifiedError.message;
+        errorMessage = simplifiedError.errorMessage;
+        errorDetails = simplifiedError.errorDetails;
+    }
+    else if(err.code && err.code === 11000){
+        const simplifiedError = handlerDuplicateError(err)
+        statusCode = simplifiedError.statusCode;
+        success = simplifiedError.success;
+        message = simplifiedError.message;
+        errorMessage = simplifiedError.errorMessage;
+        errorDetails = simplifiedError.errorDetails;
+    }
+    else if(err.message && err.message === "invalid signature"){
+        
+        statusCode = 500;
+        success =false ;
+        message = "Unauthorized Access";
+        errorMessage = "You do not have the necessary permissions to access this resource.";
+        errorDetails = null;
+        
     }
 
     res.status(statusCode).json({
@@ -45,7 +71,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
         message: message,
         errorMessage: errorMessage,
         errorDetails: errorDetails,
-        stuck: config.node_env === "development" ? err.stack : undefined,
+        stuck: config.node_env === "development" ? err.stack : null,
     })
 }
 export default globalErrorHandler

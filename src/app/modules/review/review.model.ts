@@ -14,6 +14,8 @@ const createdBySchema = new Schema<TCreatedBy>({
     role: {
         type: String
     }
+},{
+    timestamps:true
 })
 
 const reviewSchema = new Schema<TReview>({

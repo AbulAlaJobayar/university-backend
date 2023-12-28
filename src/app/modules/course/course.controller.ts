@@ -44,7 +44,7 @@ const getCourseByReviewFromDB = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Course and Reviews retrieved successfully',
+    message: 'Course with reviews retrieved successfully',
     data: result
   })
 })

@@ -64,16 +64,30 @@ const userChangedPassword = async (res:Response,userData: JwtPayload, payload: {
     if (!isPasswordValid) {
         throw new AppError(httpStatus.FORBIDDEN, 'Password Does Not Match')
     }
-    //check new  password in  history
-    const isPasswordHistory = user?.passwordHistory?.some((pass) => bcrypt.compareSync(payload.newPassword, pass.password));
-    if (isPasswordHistory) {
+    //check new password is exist on db
+    const isNewPasswordIsExistOnDB=await comparePassword(payload.newPassword, user.password)
+    if(isNewPasswordIsExistOnDB){
+        console.log('new password mile gase by by')
         sendResponse(res, {
             statusCode: httpStatus.NOT_FOUND,
             success: false,
             message: `Password change failed. Ensure the new password is unique and not among the last 2 used (last used on ${user?.passwordHistory? user.passwordHistory[0].timeStamp:''} ).`,
             data: null
         })
-        throw new AppError(httpStatus.NOT_FOUND, 'Your password matches a previous password. Please input a unique password!')
+    }
+    //check new  password in  history
+    const isPasswordHistory = user?.passwordHistory?.some((pass) => bcrypt.compareSync(payload.newPassword, pass.password));
+    
+    console.log(isPasswordHistory)
+    if (isPasswordHistory) {
+        console.log(' ak password 2 bar diso')
+        sendResponse(res, {
+            statusCode: httpStatus.NOT_FOUND,
+            success: false,
+            message: `Password change failed. Ensure the new password is unique and not among the last 2 used (last used on ${user?.passwordHistory? user.passwordHistory[0].timeStamp:''} ).`,
+            data: null
+        })
+     
     }
 
     // hash password
@@ -81,7 +95,7 @@ const userChangedPassword = async (res:Response,userData: JwtPayload, payload: {
     //check and updatePassword
     const updatedPasswordHistory = [
         { password: hashPassword, timeStamp: new Date() },
-        ...(user?.passwordHistory?.slice(0, 2) || []),
+        ...(user?.passwordHistory?.slice(0, 1) || []),
     ]
     const updatePassword = await User.findByIdAndUpdate(user._id, {
         password: hashPassword,
