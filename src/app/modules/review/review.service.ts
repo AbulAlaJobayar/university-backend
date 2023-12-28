@@ -9,8 +9,6 @@ import httpStatus from "http-status";
 
 
 const createReviewIntoDB = async (userData:JwtPayload,payload: TReview): Promise<TReview> => {
-    // const result = await Review.create(payload);
-    // return result
     const { id, email, iat,role } = userData
     const user = await User.findOne({ _id: id }).select('+password')
     
@@ -30,7 +28,7 @@ const createReviewIntoDB = async (userData:JwtPayload,payload: TReview): Promise
     }
    
     payload.createdBy={_id:user._id,username:user.username,email:user.email,role:user.role}
-    const result = await Review.create(payload);
+    const result = (await Review.create(payload))
     return result
 }
 

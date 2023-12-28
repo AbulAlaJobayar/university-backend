@@ -1,10 +1,9 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import bcrypt from 'bcrypt';
 
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
+import bcrypt from 'bcrypt';
 import httpStatus from "http-status";
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import AppError from "../../errors/AppError";

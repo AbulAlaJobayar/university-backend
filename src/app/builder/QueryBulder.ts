@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FilterQuery, Query } from 'mongoose';
 
 class QueryBuilder<T> {
@@ -45,7 +46,27 @@ class QueryBuilder<T> {
 
     return this;
   }
-
+sortBy(){
+  const sortBy =this?.query?.sort as string;
+  const sortOrder=this?.query?.sortOrder==='asc'?1:-1;
+  if(sortBy){
+    const sortObject:{[key:string]:'asc'|'desc'}={};
+    sortObject[sortBy]=sortOrder as any;
+    this.modelQuery=this.modelQuery.sort(sortObject);
+  }
+  return this;
+}
+minAndMaxPrice(){
+  const minPrice=Number(this?.query?.minPrice);
+  const maxPrice=Number(this?.query?.maxPrice);
+  if(!isNaN(minPrice)){
+    this.modelQuery=this.modelQuery.find({price:{$gte:minPrice}}); 
+  }
+  if(!isNaN(maxPrice)){
+    this.modelQuery=this.modelQuery.find({price:{$lte:maxPrice}}); 
+  }
+  return this
+}
   paginate() {
     const page = Number(this?.query?.page) || 1;
     const limit = Number(this?.query?.limit) || 10;
@@ -68,13 +89,12 @@ class QueryBuilder<T> {
     const total = await this.modelQuery.model.countDocuments(totalQueries);
     const page = Number(this?.query?.page) || 1;
     const limit = Number(this?.query?.limit) || 10;
-    const totalPage = Math.ceil(total / limit);
 
     return {
       page,
       limit,
       total,
-      totalPage,
+     
     };
   }
 }

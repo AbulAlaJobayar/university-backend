@@ -34,8 +34,8 @@ const createCategoryIntoDB = async (userData: JwtPayload, payload: TCategory): P
 }
 
 const getAllCategoryFromDB = async () => {
-    const result = await Category.find().populate({ path: 'createdBy', select: '_id username email role' })
-    return result
+    const categories = await Category.find().populate({ path: 'createdBy', select: '_id username email role' })
+    return categories
 }
 export const categoryService = {
     createCategoryIntoDB,

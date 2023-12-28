@@ -9,8 +9,13 @@ import { JwtPayload } from "jsonwebtoken";
 import { User } from '../user/user.model';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
-import QueryBuilder from "../../builder/QueryBulder";
-import { courseSearchableFields } from "./course.constant";
+import { filter } from "../../utils/filter";
+import { search } from "../../utils/search";
+import { sort } from "../../utils/short";
+import { pagination } from "../../utils/pagination";
+import { SelectedField } from "../../utils/selectedField";
+//import QueryBuilder from "../../builder/QueryBulder";
+//import { courseSearchableFields } from "./course.constant";
 
 
 const createCourseIntoDB = async (userData:JwtPayload,payload: TCourse): Promise<TCourse> => {
@@ -37,14 +42,37 @@ const createCourseIntoDB = async (userData:JwtPayload,payload: TCourse): Promise
 }
 
 const getAllCourseFromDB = async (query: TQueryObj): Promise<TCourse[] | any> => {
-    const courseQuery = new QueryBuilder(Course.find().populate({path:'createdBy',select:'_id username email role'}),query).search(courseSearchableFields).filter().sort().paginate().fields()
     
-    const meta= await courseQuery.countTotal();
-    const data= await courseQuery.modelQuery;
-    return{
-        meta,
-        data
+    const filteredQuery = filter(Course.find(), query)
+    const searches = search(filteredQuery, query)
+    const sorted = sort(searches, query)
+    const paginated = pagination(sorted, query)
+    const field = SelectedField(paginated, query).populate({path:'createdBy',select:'_id username email role'})
+    if (query?.level){
+        return await Course.find({'details.level':query.level }).populate({path:'createdBy',select:'_id username email role'})      
     }
+    else if(query.provider){
+        return await Course.find({'provider':query.provider }).populate({path:'createdBy',select:'_id username email role'})  
+    }
+    else if(query.language){
+        return await Course.find({'language':query.language }).populate({path:'createdBy',select:'_id username email role'}) 
+    }
+    else if(query.durationInWeeks){
+        return await Course.find({'durationInWeeks':query.durationInWeeks }).populate({path:'createdBy',select:'_id username email role'})   
+    }
+    
+    return field
+
+    
+    
+    // const courseQuery = new QueryBuilder(Course.find().populate({path:'createdBy',select:'_id username email role'}),query).search(courseSearchableFields).filter().sort().sortBy().minAndMaxPrice().paginate().fields()
+    
+    // const meta= await courseQuery.countTotal();
+    // const courses= await courseQuery.modelQuery;
+    // return{
+    //     meta,
+    //     courses
+    // }
    
 }
 const updateCourseIntoDB = async (userData:JwtPayload,id: string, payload: Partial<TCourse>) => {

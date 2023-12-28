@@ -14,8 +14,6 @@ const createdBySchema = new Schema<TCreatedBy>({
     role: {
         type: String
     }
-},{
-    timestamps:true
 })
 
 const reviewSchema = new Schema<TReview>({
@@ -37,7 +35,8 @@ const reviewSchema = new Schema<TReview>({
     createdBy: {
         type: createdBySchema
     }
+  
 
-})
+},{timestamps:true})
 
 export const Review = model<TReview>('Review', reviewSchema)
