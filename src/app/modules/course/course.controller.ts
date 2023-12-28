@@ -22,7 +22,6 @@ const createCourse = catchAsync(async (req, res) => {
 const getAllCourseFromDB = catchAsync(async (req, res) => {
   const courses = await courseService.getAllCourseFromDB(req.query);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const { meta, courses } = result
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
   let perPageLimit = 10
   const totalDataLength = courses.length
@@ -32,7 +31,7 @@ const getAllCourseFromDB = catchAsync(async (req, res) => {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Courses retrieved successfully',
-    meta: { page, limit: 10, total: pageData.length }, //{page:1,limit:10,total:result.length},
+    meta: { page, limit: 10, total: pageData.length },
     data:{courses}
   })
 })
