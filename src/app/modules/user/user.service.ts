@@ -78,9 +78,8 @@ const userChangedPassword = async (res:Response,userData: JwtPayload, payload: {
     //check new  password in  history
     const isPasswordHistory = user?.passwordHistory?.some((pass) => bcrypt.compareSync(payload.newPassword, pass.password));
     
-    console.log(isPasswordHistory)
+    
     if (isPasswordHistory) {
-        console.log(' ak password 2 bar diso')
         sendResponse(res, {
             statusCode: httpStatus.NOT_FOUND,
             success: false,
@@ -102,6 +101,7 @@ const userChangedPassword = async (res:Response,userData: JwtPayload, payload: {
         passwordChangedAt: new Date(),
         passwordHistory: updatedPasswordHistory
     }, { new: true })
+    console.log(updatePassword)
    const {password,passwordHistory,...otherProperty}=updatePassword?.toObject as any
     return otherProperty
 
