@@ -44,6 +44,7 @@ Build Project:
 ## API Reference
 
 #### Domain: https://courseuniversity.vercel.app/
+#### Api Documentation Link: https://documenter.getpostman.com/view/20207336/2s9YkuaeNs
 
 #### User Registration
 
